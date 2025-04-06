@@ -19,13 +19,23 @@
 package megamek.common;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import megamek.client.ui.swing.util.PlayerColour;
+import org.mockito.Mockito;
 
 class PlayerTest {
 
+    private Player  owner; // La classe où se trouve isEligibleEntity
+    private Game game;
+    @BeforeEach
+    public void setup() {
+        game = Mockito.mock(Game.class);
+        owner = new Player(0, "Test Player 1"); // Passe game si nécessaire
+    }
     @Test
     void testGetColorForPlayerDefault() {
         String playerName = "Test Player 1";
@@ -40,4 +50,58 @@ class PlayerTest {
         player.setColour(PlayerColour.FUCHSIA);
         assertEquals("<B><font color='f000f0'>" + playerName + "</font></B>", player.getColorForPlayer());
     }
+
+
+
+
+    @Test
+    public void testIsEligibleEntity_NullOwner() {
+        Entity entity = Mockito.mock(Entity.class);
+        Mockito.when(entity.getOwner()).thenReturn(null);
+
+        assertFalse(owner.isEligibleEntity(entity));
+    }
+
+    @Test
+    public void testIsEligibleEntity_DestroyedEntity() {
+        Entity entity = Mockito.mock(Entity.class);
+        Mockito.when(entity.getOwner()).thenReturn(owner);
+        Mockito.when(entity.isDestroyed()).thenReturn(true);
+
+        assertFalse(owner.isEligibleEntity(entity));
+    }
+
+
+    @Test
+    public void testCalculateBonus_CommandInitFalse_NoBonusSources() {
+        Entity entity = Mockito.mock(Entity.class);
+        Crew crew = Mockito.mock(Crew.class);
+
+        Mockito.when(entity.getCrew()).thenReturn(crew);
+        Mockito.when(entity.hasCommandConsoleBonus()).thenReturn(false);
+        Mockito.when(crew.hasActiveTechOfficer()).thenReturn(false);
+
+        int result = owner.calculateBonus(entity, false);
+        assertEquals(0, result); // No bonus at all
+    }
+
+    @Test
+    public void testGetCommandBonus_GameIsNull() {
+        owner = new Player(0,null); // force game=null
+        assertEquals(0, owner.getCommandBonus());
+    }
+
+    @Test
+    void testGetCommandBonus_gameIsNull() {
+        String playerName = "Test Player 1";
+        // Cas où 'game' est null, la méthode doit retourner 0
+        Player player = new Player(1, playerName);
+
+
+        int result = player.getCommandBonus();
+
+        assertEquals(0, result);
+    }
+
+
 }

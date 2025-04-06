@@ -634,7 +634,7 @@ public final class Player extends TurnOrdered {
         return commandb;
     }
 
-    private boolean isEligibleEntity(Entity entity) {
+    public boolean isEligibleEntity(Entity entity) {
         return entity.getOwner() != null &&
               entity.getOwner().equals(this) &&
               !entity.isDestroyed() &&
@@ -645,7 +645,7 @@ public final class Player extends TurnOrdered {
                     entity.getDeployRound() == game.getCurrentRound() + 1);
     }
 
-    private int calculateBonus(Entity entity, boolean useCommandInit) {
+    public int calculateBonus(Entity entity, boolean useCommandInit) {
         int bonus = useCommandInit ? entity.getCrew().getCommandBonus() : 0;
 
         if (entity.hasCommandConsoleBonus() || entity.getCrew().hasActiveTechOfficer()) {

@@ -103,6 +103,7 @@ checkstyle {
     toolVersion = '10.18.1'
     configFile = file("config/checkstyle/checkstyle.xml")
     ignoreFailures = false
+
 }
 
 run {
@@ -485,8 +486,8 @@ task testAi(type: JavaExec, dependsOn: jar) {
 }
 
 tasks.withType(Checkstyle) {
-    minHeapSize = "200m"
-    maxHeapSize = "1g"
+   // minHeapSize = "200m"
+  //  maxHeapSize = "1g"
     reports {
         xml.required = false
         html.required = true
