@@ -95,9 +95,7 @@ public class GameVictoryEvent extends GameEvent implements PostGameResolution {
         Vector<Entity> graveyard = new Vector<>();
 
         for (Entity entity : vOutOfGame) {
-            if ((entity.getRemovalCondition() == IEntityRemovalConditions.REMOVE_SALVAGEABLE)
-                    || (entity.getRemovalCondition() == IEntityRemovalConditions.REMOVE_CAPTURED)
-                    || (entity.getRemovalCondition() == IEntityRemovalConditions.REMOVE_EJECTED)) {
+            if (isGraveyardEntity(entity)) {
                 graveyard.addElement(entity);
             }
         }
@@ -106,20 +104,49 @@ public class GameVictoryEvent extends GameEvent implements PostGameResolution {
     }
 
     /**
+     * Checks whether an entity should be considered as belonging to the
+     * "graveyard".
+     * This includes entities that have been:
+     * - recovered as salvageable,
+     * - captured by the enemy,
+     * - ejected from the battlefield.
+     *
+     * @param e the entity to evaluate.
+     * @return {@code true} if the entity meets the graveyard criteria,
+     *         {@code false} otherwise.
+     */
+    private boolean isGraveyardEntity(Entity e) {
+        int cond = e.getRemovalCondition();
+        return cond == IEntityRemovalConditions.REMOVE_SALVAGEABLE ||
+                cond == IEntityRemovalConditions.REMOVE_CAPTURED ||
+                cond == IEntityRemovalConditions.REMOVE_EJECTED;
+    }
+    /**
      * @return an enumeration of wrecked entities.
      */
     @Override
     public Enumeration<Entity> getWreckedEntities() {
         Vector<Entity> wrecks = new Vector<>();
         for (Entity entity : vOutOfGame) {
-            if ((entity.getRemovalCondition() == IEntityRemovalConditions.REMOVE_SALVAGEABLE)
-                    || (entity.getRemovalCondition() == IEntityRemovalConditions.REMOVE_EJECTED)
-                    || (entity.getRemovalCondition() == IEntityRemovalConditions.REMOVE_CAPTURED)) {
+            if (isWreckedEntity(entity)) {
                 wrecks.addElement(entity);
             }
         }
-
         return wrecks.elements();
+    }
+
+    /**
+     * Checks whether an entity should be considered as "wrecked".
+     *
+     * @param e the entity to evaluate.
+     * @return {@code true} if the entity meets the wrecked criteria,
+     *         {@code false} otherwise.
+     */
+    private boolean isWreckedEntity(Entity e) {
+        int cond = e.getRemovalCondition();
+        return cond == IEntityRemovalConditions.REMOVE_SALVAGEABLE ||
+                cond == IEntityRemovalConditions.REMOVE_EJECTED ||
+                cond == IEntityRemovalConditions.REMOVE_CAPTURED;
     }
 
     /**
